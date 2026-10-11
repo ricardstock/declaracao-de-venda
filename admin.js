@@ -3,35 +3,8 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// --- A TUA PALAVRA-PASSE DE ADMIN ---
-const ADMIN_PASSWORD = "A_TUA_PASSE_AQUI"; // Define aqui a tua palavra-passe
-const STORAGE_KEY_AUTH = "admin_auth_token_v3";
-
-function verificarAcessoAdmin() {
-  // LIMPEZA AUTOMÁTICA: Remove qualquer bloqueio antigo guardado em versões anteriores
-  localStorage.removeItem("admin_blocked_device_v1");
-  localStorage.removeItem("admin_blocked_device_v2");
-
-  const tokenSalvo = localStorage.getItem(STORAGE_KEY_AUTH);
-  
-  // Se já tiveres autenticado com sucesso neste dispositivo, entra direto
-  if (tokenSalvo === ADMIN_PASSWORD) {
-    carregarDeclaracoes();
-    return;
-  }
-
-  // Pedir palavra-passe
-  const pass = prompt("Acesso Restrito ao Administrador.\nIntroduza a palavra-passe:");
-
-  if (pass === ADMIN_PASSWORD) {
-    // Guarda a autorização neste dispositivo para nunca mais pedir
-    localStorage.setItem(STORAGE_KEY_AUTH, ADMIN_PASSWORD);
-    carregarDeclaracoes();
-  } else {
-    alert("Palavra-passe incorreta!");
-    location.reload(); // Recarrega para tentar de novo
-  }
-}
+// Assim que a página abre, carrega diretamente as declarações sem pedir passwords
+document.addEventListener('DOMContentLoaded', carregarDeclaracoes);
 
 async function carregarDeclaracoes() {
   const tbody = document.getElementById('admin-table-body');
@@ -184,5 +157,3 @@ function getDataUrlFromImage(url) {
     img.src = url;
   });
 }
-
-document.addEventListener('DOMContentLoaded', verificarAcessoAdmin);
