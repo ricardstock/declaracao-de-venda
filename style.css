@@ -6,7 +6,7 @@
   --accent-hover: #1d4ed8;
   --text-main: #1e293b;
   --text-muted: #64748b;
-  --border-color: #cbd5e1;
+  --border-color: #e2e8f0;
 }
 
 * {
@@ -19,134 +19,191 @@
 body {
   background-color: var(--bg-color);
   color: var(--text-main);
-  padding: 20px 10px;
+  padding: 40px 20px;
 }
 
-/* Estrutura principal idêntica ao .admin-container para ter as margens e cartões corretos */
-.form-container-main {
-  max-width: 900px;
-  margin: 30px auto;
+.page-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Cabeçalho isolado em cartão superior */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
   background: var(--card-bg);
-  padding: 40px;
+  padding: 20px 30px;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
 }
 
-.form-container-main h2 {
+.main-header h1 {
   font-size: 22px;
   font-weight: 800;
   color: var(--primary);
 }
 
-.lang-select {
-  padding: 6px 12px;
-  border-radius: 8px;
+.lang-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 10px;
   border: 1px solid var(--border-color);
-  background: #fff;
-  font-weight: 600;
+}
+
+.lang-selector select {
+  border: none;
+  background: transparent;
+  font-weight: 700;
+  color: var(--primary);
   cursor: pointer;
   outline: none;
 }
 
-/* Sub-secções dentro do formulário */
-.form-section {
-  margin-bottom: 30px;
-  padding-bottom: 25px;
-  border-bottom: 1px solid #f1f5f9;
+/* Cartões brancos independentes */
+.form-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 30px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
-.form-section h3 {
-  font-size: 16px;
+.form-card h2 {
+  font-size: 18px;
   font-weight: 700;
+  margin-bottom: 20px;
   color: var(--primary);
-  margin-bottom: 16px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 10px;
 }
 
-.row-2 {
+.grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin-bottom: 15px;
+  gap: 16px;
 }
 
 input[type="text"],
 input[type="email"],
 input[type="tel"],
-input[type="number"] {
+input[type="number"],
+.country-select {
   width: 100%;
-  padding: 12px 16px;
-  margin-bottom: 15px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
   border: 1.5px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 14px;
-  background: #fafafa;
   transition: all 0.2s ease;
+  background: #fafafa;
 }
 
-input:focus {
+.country-select {
+  outline: none;
+  cursor: pointer;
+}
+
+input:focus, .country-select:focus {
   outline: none;
   border-color: var(--accent);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
-.input-addon-group {
-  display: flex;
-  border: 1.5px solid var(--border-color);
-  border-radius: 8px;
-  overflow: hidden;
-  background: #fafafa;
+.input-group-wrapper {
+  margin-bottom: 16px;
 }
 
-.addon-box {
-  padding: 12px 14px;
-  background: #f1f5f9;
-  border-right: 1.5px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
 }
 
-.produto-box-item {
-  background: #f8fafc;
-  border: 1px solid var(--border-color);
-  padding: 18px;
+.phone-container, .country-container {
+  width: 100%;
+}
+
+.iti {
+  width: 100%;
+}
+
+.iti__country-list {
   border-radius: 10px;
-  margin-bottom: 15px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
-.product-row-fields {
+.product-item {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 16px;
+}
+
+.product-row {
   display: grid;
   grid-template-columns: 70px 110px 1fr 90px 110px;
   gap: 10px;
   margin-bottom: 12px;
 }
 
-.product-row-fields input {
+.product-row input {
   margin-bottom: 0 !important;
 }
 
-.checkbox-line {
+.checkbox-label {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 13px;
   color: var(--text-muted);
   cursor: pointer;
+  margin-top: 10px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.sig-date-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.date-group input[type="date"] {
+  padding: 10px 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  background: #fafafa;
+  font-size: 14px;
+  outline: none;
 }
 
 .canvas-container {
   border: 2px dashed var(--border-color);
-  border-radius: 10px;
+  border-radius: 12px;
   background: #fff;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 canvas {
   width: 100%;
-  height: 150px;
+  height: 180px;
   display: block;
   cursor: crosshair;
 }
@@ -155,8 +212,8 @@ canvas {
   background-color: #e2e8f0;
   color: var(--primary);
   border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 12px 20px;
+  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
@@ -166,18 +223,19 @@ canvas {
   background-color: #cbd5e1;
 }
 
-.btn-link-danger {
-  background: none;
-  border: none;
+.btn-small {
+  background: transparent;
   color: #ef4444;
-  padding: 6px 0;
-  cursor: pointer;
-  font-size: 13px;
+  border: 1px solid #fecaca;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
   font-weight: 600;
+  cursor: pointer;
 }
 
-.btn-link-danger:hover {
-  text-decoration: underline;
+.btn-small:hover {
+  background: #fef2f2;
 }
 
 .btn-primary {
@@ -185,12 +243,12 @@ canvas {
   background-color: var(--accent);
   color: white;
   border: none;
-  padding: 14px;
-  border-radius: 10px;
+  padding: 16px;
+  border-radius: 12px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
@@ -199,13 +257,10 @@ canvas {
 }
 
 @media (max-width: 768px) {
-  .row-2 {
+  .grid-2 {
     grid-template-columns: 1fr;
   }
-  .product-row-fields {
+  .product-row {
     grid-template-columns: 1fr;
-  }
-  .form-container-main {
-    padding: 20px;
   }
 }

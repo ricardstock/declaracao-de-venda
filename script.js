@@ -3,8 +3,18 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Definir a data atual por defeito no campo de data
+// Inicializar intl-tel-input no campo de telemóvel
+let iti;
 window.addEventListener('DOMContentLoaded', () => {
+  const phoneInput = document.getElementById('telefone');
+  if (phoneInput && window.intlTelInput) {
+    iti = window.intlTelInput(phoneInput, {
+      initialCountry: "pt",
+      preferredCountries: ["pt", "es", "fr", "gb", "de"],
+      utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+    });
+  }
+
   const dataInput = document.getElementById('data_declaracao');
   if (dataInput) {
     const hoje = new Date().toISOString().split('T')[0];
@@ -91,7 +101,7 @@ function criarLinhaProduto() {
     </div>
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <label class="checkbox-label" style="margin-top: 0;">
-        <input type="checkbox" class="p-declaracao" required style="width: 16px; height: 16px;">
+        <input type="checkbox" class="p-declaracao" required>
         <span>Declaro que sou um vendedor particular e que os produtos vendidos são bens usados, não tendo sido liquidado IVA nesta venda</span>
       </label>
       <button type="button" class="btn-small btn-remover" style="margin-left: 10px;">Remover</button>
@@ -155,10 +165,12 @@ if (form) {
         });
       });
 
+      const telefoneCompleto = iti ? iti.getNumber() : document.getElementById('telefone').value;
+
       const payload = {
         nome: document.getElementById('nome').value,
         nif: document.getElementById('nif').value,
-        telefone: document.getElementById('telefone').value,
+        telefone: telefoneCompleto,
         email: document.getElementById('email').value,
         morada: document.getElementById('morada').value,
         codigo_postal: document.getElementById('codigo_postal').value,

@@ -4,77 +4,94 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Declaração de Venda</title>
+  
+  <!-- CSS Principal -->
   <link rel="stylesheet" href="style.css">
+  
+  <!-- intl-tel-input CSS para seleções de telemóvel com bandeiras -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css" />
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div class="form-container-main">
-    <!-- Cabeçalho idêntico à estrutura do painel -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-      <h2>Declaração de Venda</h2>
-      <select class="lang-select">
-        <option>🌐 Português</option>
-      </select>
-    </div>
+  <div class="page-wrapper">
+    <!-- Cabeçalho em Cartão Separado -->
+    <header class="main-header">
+      <h1>Declaração de Venda</h1>
+      <div class="lang-selector">
+        <span>🌐</span>
+        <select>
+          <option>Português</option>
+        </select>
+      </div>
+    </header>
 
     <form id="declaracao-form">
-      <!-- Secção 1: Informações Pessoais -->
-      <div class="form-section">
-        <h3>Informações Pessoais</h3>
+      <!-- Cartão 1: Informações Pessoais -->
+      <div class="form-card">
+        <h2>Informações Pessoais</h2>
         
-        <div class="row-2">
+        <div class="grid-2">
           <input type="text" id="nome" placeholder="Nome Completo" required>
           <input type="text" id="nif" placeholder="NIF" required>
         </div>
 
-        <div style="margin-bottom: 15px;">
-          <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px; font-weight: 600;">Contacto Telefónico</label>
-          <div class="input-addon-group">
-            <div class="addon-box">
-              <span>🇵🇹</span> <span>▾</span>
-            </div>
-            <input type="tel" id="telefone" placeholder="912 345 678" style="border: none; margin-bottom: 0; background: transparent;">
+        <div class="input-group-wrapper">
+          <label class="field-label">Contacto Telefónico</label>
+          <div class="phone-container">
+            <input type="tel" id="telefone" placeholder="912 345 678" style="width: 100%;">
           </div>
         </div>
 
-        <div style="margin-bottom: 15px;">
+        <div class="input-group-wrapper">
           <input type="email" id="email" placeholder="Endereço de Email">
         </div>
 
-        <div style="margin-bottom: 15px;">
+        <div class="input-group-wrapper">
           <input type="text" id="morada" placeholder="Morada Completa" required>
         </div>
 
-        <div style="margin-bottom: 15px;">
-          <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px; font-weight: 600;">País de Residência</label>
-          <div class="input-addon-group" style="padding: 0 12px; align-items: center; gap: 8px;">
-            <span>🇵🇹</span>
-            <select id="pais" style="border: none; background: transparent; width: 100%; outline: none; font-size: 14px; color: var(--text-main);">
-              <option value="Portugal">Portugal</option>
+        <div class="input-group-wrapper">
+          <label class="field-label">País de Residência</label>
+          <div class="country-container">
+            <select id="pais" class="country-select">
+              <option value="Portugal" selected>🇵🇹 Portugal</option>
+              <option value="Espanha">🇪🇸 Espanha</option>
+              <option value="França">🇫🇷 França</option>
+              <option value="Alemanha">🇩🇪 Alemanha</option>
+              <option value="Reino Unido">🇬🇧 Reino Unido</option>
+              <option value="Itália">🇮🇹 Itália</option>
+              <option value="Suíça">🇨🇭 Suíça</option>
+              <option value="Bélgica">🇧🇪 Bélgica</option>
+              <option value="Países Baixos">🇳🇱 Países Baixos</option>
+              <option value="Brasil">🇧🇷 Brasil</option>
+              <option value="Angola">🇦🇴 Angola</option>
+              <option value="Moçambique">🇲🇿 Moçambique</option>
+              <option value="Outro">Outro País</option>
             </select>
           </div>
         </div>
 
-        <div class="row-2">
+        <div class="grid-2" style="margin-top: 15px;">
           <input type="text" id="codigo_postal" placeholder="Código Postal" required>
           <input type="text" id="cidade" placeholder="Cidade" required>
         </div>
       </div>
 
-      <!-- Secção 2: Produto(s) Vendido(s) -->
-      <div class="form-section">
-        <h3>Produto(s) Vendido(s)</h3>
+      <!-- Cartão 2: Produto(s) Vendido(s) -->
+      <div class="form-card">
+        <h2>Produto(s) Vendido(s)</h2>
         <div id="produtos-container">
-          <div class="produto-box-item">
-            <div class="product-row-fields">
+          <div class="product-item">
+            <div class="product-row">
               <input type="number" class="p-qtd" placeholder="1" value="1" min="1" required>
               <input type="text" class="p-sku" placeholder="SKU / Ref">
               <input type="text" class="p-modelo" placeholder="Marca, Modelo e Cor" required>
               <input type="text" class="p-tamanho" placeholder="Tamanho">
               <input type="number" step="0.01" class="p-valor" placeholder="Valor (€)" required>
             </div>
-            <label class="checkbox-line">
-              <input type="checkbox" class="p-declaracao" required style="width: 16px; height: 16px;">
+            <label class="checkbox-label">
+              <input type="checkbox" class="p-declaracao" required>
               <span>Declaro que sou um vendedor particular e que os produtos vendidos são bens usados, não tendo sido liquidado IVA nesta venda</span>
             </label>
           </div>
@@ -83,28 +100,32 @@
         <button type="button" id="btn-adicionar-produto" class="btn-secondary">+ Adicionar Outro Produto</button>
       </div>
 
-      <!-- Secção 3: Assinatura Digital -->
-      <div class="form-section">
-        <h3>Assinatura Digital</h3>
+      <!-- Cartão 3: Assinatura Digital -->
+      <div class="form-card">
+        <h2>Assinatura Digital</h2>
         
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-          <span style="font-size: 14px; font-weight: 600; color: var(--text-main);">Data da Declaração:</span>
-          <input type="date" id="data_declaracao" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; background: #fafafa; outline: none;" required>
+        <div class="sig-date-row">
+          <span>Data da Declaração:</span>
+          <div class="date-group">
+            <input type="date" id="data_declaracao" required>
+          </div>
         </div>
         
-        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Desenhe a sua assinatura no espaço abaixo:</p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">Desenhe a sua assinatura no espaço abaixo:</p>
         
         <div class="canvas-container">
           <canvas id="signature-pad"></canvas>
         </div>
         
-        <button type="button" id="btn-limpar-assinatura" class="btn-link-danger">Limpar Assinatura</button>
+        <button type="button" id="btn-limpar-assinatura" class="btn-small">Limpar Assinatura</button>
       </div>
 
       <button type="submit" id="btn-submeter" class="btn-primary">Submeter Declaração Oficial</button>
     </form>
   </div>
 
+  <!-- intl-tel-input JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
