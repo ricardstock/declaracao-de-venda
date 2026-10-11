@@ -3,6 +3,15 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// Definir a data atual por defeito no campo de data
+window.addEventListener('DOMContentLoaded', () => {
+  const dataInput = document.getElementById('data_declaracao');
+  if (dataInput) {
+    const hoje = new Date().toISOString().split('T')[0];
+    dataInput.value = hoje;
+  }
+});
+
 // ASSINATURA CANVAS
 const canvas = document.getElementById('signature-pad');
 const ctx = canvas ? canvas.getContext('2d') : null;
@@ -10,7 +19,6 @@ let desenhando = false;
 let assinou = false;
 
 if (canvas) {
-  // Ajustar resolução em dispositivos móveis/retina
   const ratio = Math.max(window.devicePixelRatio || 1, 1);
   canvas.width = canvas.offsetWidth * ratio;
   canvas.height = canvas.offsetHeight * ratio;
@@ -65,46 +73,45 @@ if (canvas) {
   });
 }
 
-// GESTÃO DOS PRODUTOS
+// GESTÃO DOS PRODUTOS ADICIONAIS
 const produtosContainer = document.getElementById('produtos-container');
 const btnAdicionarProduto = document.getElementById('btn-adicionar-produto');
 
-function criarLinhaProduto(index) {
+function criarLinhaProduto() {
   const div = document.createElement('div');
-  div.className = 'produto-box';
-  div.style.cssText = "background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 12px; position: relative;";
+  div.className = 'product-item';
   
   div.innerHTML = `
-    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-      <input type="number" class="p-qtd" placeholder="Qt" value="1" min="1" style="width: 55px; padding: 8px;" required>
-      <input type="text" class="p-sku" placeholder="SKU / Ref" style="width: 100px; padding: 8px;">
-      <input type="text" class="p-modelo" placeholder="Marca, Modelo e Cor" style="flex: 2; min-width: 150px; padding: 8px;" required>
-      <input type="text" class="p-tamanho" placeholder="Tamanho" style="width: 80px; padding: 8px;">
-      <input type="number" step="0.01" class="p-valor" placeholder="Valor (€)" style="width: 90px; padding: 8px;" required>
-      ${index > 0 ? '<button type="button" class="btn-remover" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">X</button>' : ''}
+    <div class="product-row">
+      <input type="number" class="p-qtd" placeholder="1" value="1" min="1" required>
+      <input type="text" class="p-sku" placeholder="SKU / Ref">
+      <input type="text" class="p-modelo" placeholder="Marca, Modelo e Cor" required>
+      <input type="text" class="p-tamanho" placeholder="Tamanho">
+      <input type="number" step="0.01" class="p-valor" placeholder="Valor (€)" required>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <label class="checkbox-label" style="margin-top: 0;">
+        <input type="checkbox" class="p-declaracao" required style="width: 16px; height: 16px;">
+        <span>Declaro que sou um vendedor particular e que os produtos vendidos são bens usados, não tendo sido liquidado IVA nesta venda</span>
+      </label>
+      <button type="button" class="btn-small btn-remover" style="margin-left: 10px;">Remover</button>
     </div>
   `;
 
-  if (index > 0) {
-    div.querySelector('.btn-remover').addEventListener('click', () => {
-      div.remove();
-    });
-  }
+  div.querySelector('.btn-remover').addEventListener('click', () => {
+    div.remove();
+  });
 
   produtosContainer.appendChild(div);
 }
 
-// Iniciar com 1 produto por defeito
-if (produtosContainer) {
-  criarLinhaProduto(0);
-
+if (btnAdicionarProduto) {
   btnAdicionarProduto.addEventListener('click', () => {
-    const totalAtuais = produtosContainer.querySelectorAll('.produto-box').length;
-    criarLinhaProduto(totalAtuais);
+    criarLinhaProduto();
   });
 }
 
-// SUBMISTÃO DO FORMULÁRIO
+// SUBMISSÃO DO FORMULÁRIO
 const form = document.getElementById('declaracao-form');
 
 if (form) {
@@ -121,12 +128,11 @@ if (form) {
     btnSubmeter.innerText = "A guardar declaração...";
 
     try {
-      // 1. Converter Assinatura para Imagem e fazer Upload
       const dataURL = canvas.toDataURL('image/png');
       const blob = await (await fetch(dataURL)).blob();
       const filename = `assinaturas/ass_${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
 
-      const { data: uploadData, error: uploadError } = await sbClient.storage
+      const { error: uploadError } = await sbClient.storage
         .from('declaracoes_docs')
         .upload(filename, blob);
 
@@ -138,9 +144,8 @@ if (form) {
 
       const assinatura_url = urlData.publicUrl;
 
-      // 2. Recolher dados dos produtos
       const produtos = [];
-      document.querySelectorAll('.produto-box').forEach(box => {
+      document.querySelectorAll('.product-item').forEach(box => {
         produtos.push({
           qtd: box.querySelector('.p-qtd').value,
           sku: box.querySelector('.p-sku').value,
@@ -150,21 +155,18 @@ if (form) {
         });
       });
 
-      // 3. Obter data de hoje em formato YYYY-MM-DD
-      const hoje = new Date().toISOString().split('T')[0];
-
-      // 4. Inserir na tabela Supabase
       const payload = {
         nome: document.getElementById('nome').value,
         nif: document.getElementById('nif').value,
         telefone: document.getElementById('telefone').value,
+        email: document.getElementById('email').value,
         morada: document.getElementById('morada').value,
         codigo_postal: document.getElementById('codigo_postal').value,
         cidade: document.getElementById('cidade').value,
         pais: document.getElementById('pais').value,
         produtos: produtos,
         assinatura_url: assinatura_url,
-        data_declaracao: hoje
+        data_declaracao: document.getElementById('data_declaracao').value
       };
 
       const { error: insertError } = await sbClient
@@ -180,7 +182,7 @@ if (form) {
       console.error(err);
       alert("Erro ao submeter declaração: " + err.message);
       btnSubmeter.disabled = false;
-      btnSubmeter.innerText = "Submeter Declaração";
+      btnSubmeter.innerText = "Submeter Declaração Oficial";
     }
   });
 }
