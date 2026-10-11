@@ -1,45 +1,39 @@
 const SUPABASE_URL = "https://pwvjitzyxqxvvpmkfnlo.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3dmppdHp5eHF4dnZwbWtmbmxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MDYxNTAsImV4cCI6MjEwNzI4MjE1MH0.ctDJAzTRlzyBtSlmP8XiXTJjEOKEIUAHVnD9h8xQuuA"; // A tua chave anon public
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3dmppdHp5eHF4dnZwbWtmbmxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MDYxNTAsImV4cCI6MjEwNzI4MjE1MH0.ctDJAzTRlzyBtSlmP8XiXTJjEOKEIUAHVnD9h8xQuuA";
 
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// --- CONFIGURAÇÃO DE SEGURANÇA AVANÇADA ---
-const ADMIN_PASSWORD = "asMCIm12229MCJSnmzncw"; // Altera aqui a tua password
-const STORAGE_KEY_AUTH = "admin_auth_token_v1";
-const STORAGE_KEY_BLOCKED = "admin_blocked_device_v1";
+// --- CONFIGURAÇÃO DE SEGURANÇA ---
+const ADMIN_PASSWORD = "asMCIm12229MCJSnmzncw"; // Podes alterar aqui a palavra-passe quando quiseres
+const STORAGE_KEY_AUTH = "admin_auth_token_v2";
+const STORAGE_KEY_BLOCKED = "admin_blocked_device_v2";
 
 function verificarAcessoAdmin() {
   const tokenSalvo = localStorage.getItem(STORAGE_KEY_AUTH);
   const estaBloqueado = localStorage.getItem(STORAGE_KEY_BLOCKED);
   
-  // Se o dispositivo foi bloqueado por errar a password anteriormente
-  if (estaBloqueado === ADMIN_PASSWORD) {
-    mostrarEcraBloqueado("Acesso negado permanentemente neste dispositivo devido a tentativas falhadas.");
-    return;
-  }
-
-  // Se já tiver autenticado com sucesso neste dispositivo para esta versão de password
+  // Se já tiveres entrado com sucesso neste dispositivo
   if (tokenSalvo === ADMIN_PASSWORD) {
     carregarDeclaracoes();
     return;
   }
 
-  // Se a password foi alterada no código, limpa o bloqueio anterior
-  if (estaBloqueado && estaBloqueado !== ADMIN_PASSWORD) {
+  // Se o dispositivo estava bloqueado por uma palavra-passe antiga, limpa o bloqueio
+  if (estaBloqueado) {
     localStorage.removeItem(STORAGE_KEY_BLOCKED);
   }
 
   const pass = prompt("Acesso Restrito ao Administrador.\nIntroduza a palavra-passe:");
 
   if (pass === ADMIN_PASSWORD) {
-    // Confia neste dispositivo para sempre
+    // Autentica e confia neste dispositivo
     localStorage.setItem(STORAGE_KEY_AUTH, ADMIN_PASSWORD);
     carregarDeclaracoes();
   } else {
-    // Bloqueia permanentemente este dispositivo associado a esta password
-    localStorage.setItem(STORAGE_KEY_BLOCKED, ADMIN_PASSWORD);
-    alert("Palavra-passe incorreta! Acesso negado permanentemente.");
-    mostrarEcraBloqueado("Acesso negado. Este dispositivo foi bloqueado.");
+    // Guarda o bloqueio para esta sessão
+    localStorage.setItem(STORAGE_KEY_BLOCKED, "true");
+    alert("Palavra-passe incorreta! Acesso negado.");
+    mostrarEcraBloqueado("Acesso negado. Palavra-passe incorreta.");
   }
 }
 
@@ -48,7 +42,7 @@ function mostrarEcraBloqueado(mensagem) {
     <div style="text-align: center; margin-top: 120px; font-family: sans-serif; padding: 20px;">
       <h1 style="color: #ef4444; font-size: 28px;">Acesso Negado</h1>
       <p style="color: #475569; font-size: 16px; margin-top: 10px;">${mensagem}</p>
-      <p style="color: #94a3b8; font-size: 13px; margin-top: 30px;">Para desbloquear, o administrador deve atualizar a palavra-passe no código fonte.</p>
+      <p style="color: #94a3b8; font-size: 13px; margin-top: 30px;">Para tentar novamente, atualize a página ou altere a palavra-passe no código.</p>
     </div>
   `;
 }
@@ -71,7 +65,6 @@ async function carregarDeclaracoes() {
 
   tbody.innerHTML = '';
   data.forEach(item => {
-    // Formatar data para DD/MM/AAAA
     let dataFormatada = item.data_declaracao;
     if (dataFormatada && dataFormatada.includes('-')) {
       const partes = dataFormatada.split('-');
@@ -96,7 +89,6 @@ async function gerarPDF(item) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  // Formatar data para DD/MM/AAAA
   let dataFormatada = item.data_declaracao;
   if (dataFormatada && dataFormatada.includes('-')) {
     const partes = dataFormatada.split('-');
@@ -105,7 +97,6 @@ async function gerarPDF(item) {
     }
   }
 
-  // Limpar NIF se vier com "PT" à frente
   const nifLimpo = item.nif ? item.nif.replace(/^PT/i, '') : '';
 
   // --- CABEÇALHO ---
@@ -117,21 +108,17 @@ async function gerarPDF(item) {
   doc.setFont("helvetica", "normal");
   doc.text(`Data: ${dataFormatada}`, 150, 22);
 
-  // Linha divisória do cabeçalho
   doc.setLineWidth(0.5);
   doc.setDrawColor(200, 200, 200);
   doc.line(20, 28, 190, 28);
 
   let cursorY = 40;
 
-  // --- IDENTIFICAÇÃO DO VENDEDOR (FONTE NORMAL) ---
+  // --- IDENTIFICAÇÃO DO VENDEDOR ---
   doc.setFontSize(10.5);
   doc.setFont("helvetica", "normal");
-  
   doc.text(`Eu, ${item.nome}, NIF ${nifLimpo}, residente em:`, 20, cursorY);
   cursorY += 6;
-  
-  // Morada limpa e sem negrito
   doc.text(`${item.morada}`, 25, cursorY);
   cursorY += 6;
   doc.text(`${item.codigo_postal} ${item.cidade}, ${item.pais}`, 25, cursorY);
@@ -140,8 +127,7 @@ async function gerarPDF(item) {
 
   // --- DECLARAÇÃO DE VENDA ---
   doc.setFont("helvetica", "normal");
-  const textoComprador = "Declaro que vendi a Ricardo Filipe Oliveira Pinho, NIF 260429651, os seguintes artigos:";
-  doc.text(textoComprador, 20, cursorY);
+  doc.text("Declaro que vendi a Ricardo Filipe Oliveira Pinho, NIF 260429651, os seguintes artigos:", 20, cursorY);
 
   cursorY += 12;
 
@@ -158,7 +144,7 @@ async function gerarPDF(item) {
 
   cursorY += 10;
 
-  // --- DECLARAÇÃO LEGAL DE BENS USADOS / IVA ---
+  // --- DECLARAÇÃO LEGAL DE BENS USADOS ---
   doc.setFont("helvetica", "italic");
   doc.setFontSize(9.5);
   const declaracaoIVA = "Declaro que sou um vendedor particular e que os produtos vendidos são bens usados, não tendo sido liquidado IVA nesta venda.";
@@ -171,20 +157,17 @@ async function gerarPDF(item) {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
 
-  // Coluna Esquerda: Comprador
   const xComprador = 20;
   doc.text("Comprador:", xComprador, cursorY);
   doc.setFont("helvetica", "normal");
   doc.text("___________________________________", xComprador, cursorY + 25);
 
-  // Coluna Direita: O Vendedor
   const xVendedor = 120;
   doc.setFont("helvetica", "bold");
   doc.text("O Vendedor:", xVendedor, cursorY);
   doc.setFont("helvetica", "normal");
   doc.text("___________________________________", xVendedor, cursorY + 25);
 
-  // Inserir Assinatura Digital do Vendedor no local correto
   if (item.assinatura_url) {
     try {
       const imgData = await getDataUrlFromImage(item.assinatura_url);
@@ -196,7 +179,6 @@ async function gerarPDF(item) {
     }
   }
 
-  // Guardar PDF
   doc.save(`Declaracao_${nifLimpo}_${dataFormatada.replace(/\//g, '-')}.pdf`);
 }
 
