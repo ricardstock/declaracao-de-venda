@@ -4,7 +4,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- CONFIGURAÇÃO DE SEGURANÇA ---
-const ADMIN_PASSWORD = "asMCIm12229MCJSnmzncw"; // Podes alterar aqui a palavra-passe quando quiseres
+const ADMIN_PASSWORD = "asMCIm12224522ndasikicaap"; // Podes alterar aqui a palavra-passe quando quiseres
 const STORAGE_KEY_AUTH = "admin_auth_token_v2";
 const STORAGE_KEY_BLOCKED = "admin_blocked_device_v2";
 
