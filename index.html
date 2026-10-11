@@ -5,17 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Declaração de Venda</title>
   
-  <!-- CSS Principal -->
   <link rel="stylesheet" href="style.css">
   
-  <!-- intl-tel-input CSS para seleções de telemóvel com bandeiras -->
+  <!-- intl-tel-input CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css" />
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <div class="page-wrapper">
-    <!-- Cabeçalho em Cartão Separado -->
+    <!-- Cabeçalho -->
     <header class="main-header">
       <h1>Declaração de Venda</h1>
       <div class="lang-selector">
@@ -39,7 +38,7 @@
         <div class="input-group-wrapper">
           <label class="field-label">Contacto Telefónico</label>
           <div class="phone-container">
-            <input type="tel" id="telefone" placeholder="912 345 678" style="width: 100%;">
+            <input type="tel" id="telefone" placeholder="912 345 678">
           </div>
         </div>
 
@@ -72,7 +71,7 @@
           </div>
         </div>
 
-        <div class="grid-2" style="margin-top: 15px;">
+        <div class="grid-2" style="margin-top: 16px;">
           <input type="text" id="codigo_postal" placeholder="Código Postal" required>
           <input type="text" id="cidade" placeholder="Cidade" required>
         </div>
@@ -111,7 +110,7 @@
           </div>
         </div>
         
-        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">Desenhe a sua assinatura no espaço abaixo:</p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Desenhe a sua assinatura no espaço abaixo:</p>
         
         <div class="canvas-container">
           <canvas id="signature-pad"></canvas>
@@ -124,7 +123,6 @@
     </form>
   </div>
 
-  <!-- intl-tel-input JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="script.js"></script>
 </body>
