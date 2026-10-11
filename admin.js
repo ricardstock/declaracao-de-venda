@@ -4,7 +4,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- CONFIGURAÇÃO DE SEGURANÇA ---
-const ADMIN_PASSWORD = "sua_passe_aqui"; // Altera aqui para a tua palavra-passe secreta
+const ADMIN_PASSWORD = "asMCIm12224522ndasikicaap"; // Altera aqui para a tua palavra-passe secreta
 const STORAGE_KEY_AUTH = "admin_auth_token_v4";
 
 function verificarAcessoAdmin() {
