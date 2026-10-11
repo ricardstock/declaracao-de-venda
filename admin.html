@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Administração - Declarações</title>
+  
+  <link rel="stylesheet" href="style.css">
+  <!-- Supabase JS v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <style>
+    .admin-container { max-width: 1000px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+    th { background: #f8fafc; font-weight: 700; color: var(--primary); }
+    .btn-pdf { background-color: #2563eb; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
+    .btn-pdf:hover { background-color: #1d4ed8; }
+  </style>
+</head>
+<body>
+
+  <div class="admin-container">
+    <h2>Painel de Administração</h2>
+    <p style="color: var(--text-muted); margin-top: 5px;">Lista de declarações de venda submetidas pelos clientes:</p>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Vendedor</th>
+          <th>NIF</th>
+          <th>Telemóvel</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody id="admin-table-body">
+        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">A carregar declarações...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
