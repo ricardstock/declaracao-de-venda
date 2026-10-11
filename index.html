@@ -53,7 +53,7 @@
       <!-- PRODUTOS -->
       <h3>Produto(s) Vendido(s)</h3>
       <div id="produtos-container">
-        <!-- Linhas de produtos inseridas dinamicamente -->
+        <!-- Linhas dinâmicas vão aparecer aqui -->
       </div>
 
       <button type="button" id="btn-adicionar-produto" class="btn-secondary">+ Adicionar Outro Produto</button>
@@ -62,7 +62,7 @@
       <div class="declaracao-global-box" style="margin-top: 25px; margin-bottom: 20px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
         <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 14px; color: #334155;">
           <input type="checkbox" id="declaracao-global" required style="margin-top: 3px; width: 18px; height: 18px;">
-          <span>Declaro que sou unicamente um vendedor particular e que os produtos vendidos são bens usados, não tendo sido liquidado IVA nesta venda. (Obrigatório)</span>
+          <span>Declaro que sou um vendedor particular e que os produtos vendidos são bens usados, não tendo sido liquidado IVA nesta venda. (Obrigatório)</span>
         </label>
       </div>
 
@@ -175,7 +175,6 @@
     }
 
     if (produtosContainer) {
-      // Cria a primeira linha logo ao carregar a página
       criarLinhaProduto(0);
 
       btnAdicionarProduto.addEventListener('click', () => {
@@ -201,6 +200,7 @@
         btnSubmeter.innerText = "A guardar declaração...";
 
         try {
+          // 1. Converter Assinatura para Imagem e Upload
           const dataURL = canvas.toDataURL('image/png');
           const blob = await (await fetch(dataURL)).blob();
           const filename = `assinaturas/ass_${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
@@ -217,6 +217,7 @@
 
           const assinatura_url = urlData.publicUrl;
 
+          // 2. Recolher dados dos produtos
           const produtos = [];
           document.querySelectorAll('.produto-box').forEach(box => {
             produtos.push({
@@ -228,8 +229,10 @@
             });
           });
 
+          // 3. Obter data
           const hoje = new Date().toISOString().split('T')[0];
 
+          // 4. Inserir no Supabase
           const payload = {
             nome: document.getElementById('nome').value,
             nif: document.getElementById('nif').value,
