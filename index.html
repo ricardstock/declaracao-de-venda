@@ -1,330 +1,119 @@
-:root {
-  --bg-color: #f1f5f9;
-  --card-bg: #ffffff;
-  --primary: #0f172a;
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
-}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Declaração de Venda</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <main class="page-wrapper">
+    <!-- Cabeçalho isolado -->
+    <header class="main-header">
+      <h1>Declaração de Venda</h1>
+      <div class="lang-selector">
+        <select id="lang-select">
+          <option value="pt">🌐 Português</option>
+        </select>
+      </div>
+    </header>
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: Inter, system-ui, -apple-system, sans-serif;
-}
+    <div id="form-alert" class="form-alert hidden" role="alert" tabindex="-1"></div>
 
-body {
-  background: var(--bg-color);
-  color: var(--text-main);
-  padding: 40px 20px;
-}
+    <form id="declaracao-form">
+      <!-- Cartão 1: Informações Pessoais -->
+      <section class="form-card">
+        <h2>Informações Pessoais</h2>
+        
+        <div class="grid-2">
+          <div>
+            <label class="field-label" for="nome">Nome Completo *</label>
+            <input id="nome" type="text" placeholder="Nome Completo" autocomplete="name" required>
+          </div>
+          <div>
+            <label class="field-label" for="nif">NIF *</label>
+            <input id="nif" type="text" placeholder="NIF" required>
+          </div>
+        </div>
 
-.page-wrapper {
-  max-width: 800px;
-  margin: 0 auto;
-}
+        <div class="grid-2">
+          <div>
+            <label class="field-label" for="telefone">Contacto Telefónico</label>
+            <div class="phone-input-group">
+              <span class="flag-icon">🇵🇹 ▾</span>
+              <input id="telefone" type="tel" placeholder="912 345 678" autocomplete="tel">
+            </div>
+          </div>
+          <div>
+            <label class="field-label" for="email">Endereço de Email</label>
+            <input id="email" type="email" placeholder="Endereço de Email" autocomplete="email">
+          </div>
+        </div>
 
-.main-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  background: #ffffff;
-  padding: 20px 30px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px -2px #0000000d;
-}
+        <div>
+          <label class="field-label" for="morada">Morada Completa *</label>
+          <input id="morada" type="text" placeholder="Morada Completa" autocomplete="street-address" required>
+        </div>
 
-.main-header h1 {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--primary);
-}
+        <div>
+          <label class="field-label" for="pais">País de Residência *</label>
+          <div class="country-input-group">
+            <span class="flag-icon">🇵🇹</span>
+            <input id="pais" type="text" value="Portugal" autocomplete="country-name" required>
+          </div>
+        </div>
 
-.lang-selector select {
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  background: #f8fafc;
-  font-weight: 600;
-  color: var(--primary);
-  cursor: pointer;
-  outline: none;
-}
+        <div class="grid-2">
+          <div>
+            <label class="field-label" for="codigo_postal">Código Postal *</label>
+            <input id="codigo_postal" type="text" placeholder="Código Postal" autocomplete="postal-code" required>
+          </div>
+          <div>
+            <label class="field-label" for="cidade">Cidade *</label>
+            <input id="cidade" type="text" placeholder="Cidade" autocomplete="address-level2" required>
+          </div>
+        </div>
+      </section>
 
-.form-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 30px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 20px -2px #0000000d;
-  border: 1px solid #e2e8f0cc;
-}
+      <!-- Cartão 2: Produto(s) Vendido(s) -->
+      <section class="form-card">
+        <h2>Produto(s) Vendido(s)</h2>
+        <div id="produtos-container"></div>
+        
+        <button type="button" id="btn-adicionar-produto" class="btn-secondary">+ Adicionar Outro Produto</button>
 
-.form-card h2 {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  color: var(--primary);
-  border-bottom: 2px solid #f1f5f9;
-  padding-bottom: 10px;
-}
+        <div class="declaracao-global-box">
+          <label class="checkbox-label">
+            <input type="checkbox" id="declaracao-global" required>
+            <span>Declaro que sou unicamente um vendedor particular e que os produtos vendidos são bens usados, não tendo sido liquidado IVA nesta venda. (Obrigatório)</span>
+          </label>
+        </div>
+      </section>
 
-.grid-2 {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 16px;
-}
+      <!-- Cartão 3: Assinatura Digital -->
+      <section class="form-card">
+        <h2>Assinatura Digital</h2>
+        
+        <div class="sig-date-row">
+          <div class="date-group">
+            <label class="field-label" for="data_declaracao">Data da declaração *</label>
+            <input id="data_declaracao" type="date" required>
+          </div>
+        </div>
 
-.field-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
+        <p class="signature-help">Desenhe a sua assinatura no espaço abaixo:</p>
+        
+        <div class="canvas-container">
+          <canvas id="signature-pad" aria-label="Área para desenhar a assinatura"></canvas>
+        </div>
 
-input[type=text],
-input[type=email],
-input[type=tel],
-input[type=number] {
-  width: 100%;
-  min-width: 0;
-  padding: 14px 18px;
-  margin-bottom: 16px;
-  border: 1.5px solid var(--border-color);
-  border-radius: 10px;
-  font-size: 14px;
-  transition: border-color .2s, background .2s, box-shadow .2s;
-  background: #fafafa;
-}
+        <button type="button" id="btn-limpar-assinatura" class="btn-small">Limpar Assinatura</button>
+      </section>
 
-input:focus {
-  outline: none;
-  border-color: var(--accent);
-  background: #ffffff;
-  box-shadow: 0 0 0 4px #2563eb1a;
-}
-
-.phone-input-group,
-.country-input-group {
-  display: flex;
-  align-items: center;
-  border: 1.5px solid var(--border-color);
-  border-radius: 10px;
-  background: #fafafa;
-  margin-bottom: 16px;
-  overflow: hidden;
-}
-
-.phone-input-group input,
-.country-input-group input {
-  border: none !important;
-  margin-bottom: 0 !important;
-  background: transparent !important;
-}
-
-.flag-icon {
-  padding: 0 12px;
-  font-size: 14px;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-}
-
-.product-item {
-  background: #f8fafc;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  margin-bottom: 16px;
-}
-
-.product-row {
-  display: grid;
-  grid-template-columns: 70px 110px minmax(0, 1fr) 90px 110px;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.product-row input {
-  margin-bottom: 0;
-  padding: 14px 10px;
-}
-
-.product-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 8px;
-}
-
-.declaracao-global-box {
-  padding: 16px;
-  margin-top: 20px;
-  background: #f8fafc;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--text-muted);
-  cursor: pointer;
-}
-
-.checkbox-label input {
-  flex: 0 0 auto;
-  width: 18px;
-  height: 18px;
-  margin-top: 2px;
-  accent-color: var(--accent);
-}
-
-.sig-date-row {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 16px;
-}
-
-.date-group input {
-  max-width: 100%;
-  padding: 10px 14px;
-  border: 1.5px solid var(--border-color);
-  border-radius: 10px;
-  background: #fafafa;
-  font-size: 14px;
-  margin-bottom: 0;
-}
-
-.signature-help {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-
-.canvas-container {
-  border: 2px dashed var(--border-color);
-  border-radius: 12px;
-  background: #ffffff;
-  overflow: hidden;
-  margin-bottom: 12px;
-}
-
-canvas {
-  width: 100%;
-  height: 180px;
-  display: block;
-  cursor: crosshair;
-  touch-action: none;
-}
-
-button {
-  transition: background .2s, transform .1s;
-}
-
-button:focus-visible {
-  outline: 3px solid #93c5fd;
-  outline-offset: 3px;
-}
-
-.btn-secondary {
-  background: #e2e8f0;
-  color: var(--primary);
-  border: none;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-secondary:hover {
-  background: #cbd5e1;
-}
-
-.btn-small {
-  background: transparent;
-  color: #ef4444;
-  border: 1px solid #fecaca;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-small:hover {
-  background: #fef2f2;
-}
-
-.btn-primary {
-  width: 100%;
-  background: var(--accent);
-  color: #ffffff;
-  border: none;
-  padding: 16px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 12px #2563eb33;
-}
-
-.btn-primary:hover {
-  background: var(--accent-hover);
-}
-
-.btn-primary:disabled {
-  opacity: .65;
-  cursor: wait;
-}
-
-.form-alert {
-  background: #fef2f2;
-  border: 1.5px solid #fecaca;
-  color: #991b1b;
-  padding: 16px 20px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.form-alert.success {
-  background: #f0fdf4;
-  border-color: #bbf7d0;
-  color: #166534;
-}
-
-.hidden {
-  display: none;
-}
-
-@media(max-width: 768px) {
-  .grid-2 {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-  .product-row {
-    grid-template-columns: 1fr 1fr;
-  }
-  .product-modelo {
-    grid-column: 1 / -1;
-  }
-  .main-header h1 {
-    font-size: 21px;
-  }
-  .form-card {
-    padding: 24px;
-  }
-  .product-item {
-    padding: 16px;
-  }
-}
+      <button type="submit" id="btn-submeter" class="btn-primary">Submeter Declaração Oficial</button>
+    </form>
+  </main>
+</body>
+</html>
