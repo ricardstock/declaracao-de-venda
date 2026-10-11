@@ -6,42 +6,6 @@
   <title>Declaração de Venda</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    /* Estilos seguros para manter os campos alinhados e compactos */
-    .produto-box {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-    .produto-linha {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: nowrap;
-    }
-    .produto-linha input {
-      padding: 8px;
-      border: 1px solid #cbd5e1;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-    .p-qtd { width: 55px; text-align: center; }
-    .p-sku { width: 90px; }
-    .p-modelo { flex: 1; min-width: 120px; }
-    .p-tamanho { width: 80px; }
-    .p-valor { width: 90px; }
-    .btn-remover-linha {
-      background: #ef4444;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
   <div class="container">
@@ -89,14 +53,14 @@
       <!-- PRODUTOS -->
       <h3>Produto(s) Vendido(s)</h3>
       <div id="produtos-container">
-        <!-- ÚNICA LINHA INICIAL FIXA -->
-        <div class="produto-box">
-          <div class="produto-linha">
-            <input type="number" class="p-qtd" placeholder="Qt" value="1" min="1" required>
-            <input type="text" class="p-sku" placeholder="SKU / Ref">
-            <input type="text" class="p-modelo" placeholder="Marca, Modelo e Cor" required>
-            <input type="text" class="p-tamanho" placeholder="Tamanho">
-            <input type="number" step="0.01" class="p-valor" placeholder="Valor (€)" required>
+        <!-- Linha inicial fixa com a estrutura original limpa -->
+        <div class="produto-box" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <input type="number" class="p-qtd" placeholder="Qt" value="1" min="1" style="width: 60px; padding: 8px;" required>
+            <input type="text" class="p-sku" placeholder="SKU / Ref" style="width: 100px; padding: 8px;">
+            <input type="text" class="p-modelo" placeholder="Marca, Modelo e Cor" style="flex: 1; min-width: 180px; padding: 8px;" required>
+            <input type="text" class="p-tamanho" placeholder="Tamanho" style="width: 85px; padding: 8px;">
+            <input type="number" step="0.01" class="p-valor" placeholder="Valor (€)" style="width: 95px; padding: 8px;" required>
           </div>
         </div>
       </div>
