@@ -4,10 +4,14 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- A TUA PALAVRA-PASSE DE ADMIN ---
-const ADMIN_PASSWORD = "asMCIm12224522ndasikicaap"; // Coloca aqui a tua palavra-passe real
+const ADMIN_PASSWORD = "A_TUA_PASSE_AQUI"; // Define aqui a tua palavra-passe
 const STORAGE_KEY_AUTH = "admin_auth_token_v3";
 
 function verificarAcessoAdmin() {
+  // LIMPEZA AUTOMÁTICA: Remove qualquer bloqueio antigo guardado em versões anteriores
+  localStorage.removeItem("admin_blocked_device_v1");
+  localStorage.removeItem("admin_blocked_device_v2");
+
   const tokenSalvo = localStorage.getItem(STORAGE_KEY_AUTH);
   
   // Se já tiveres autenticado com sucesso neste dispositivo, entra direto
@@ -20,13 +24,12 @@ function verificarAcessoAdmin() {
   const pass = prompt("Acesso Restrito ao Administrador.\nIntroduza a palavra-passe:");
 
   if (pass === ADMIN_PASSWORD) {
-    // Guarda a autorização neste dispositivo
+    // Guarda a autorização neste dispositivo para nunca mais pedir
     localStorage.setItem(STORAGE_KEY_AUTH, ADMIN_PASSWORD);
     carregarDeclaracoes();
   } else {
     alert("Palavra-passe incorreta!");
-    // Recarrega a página para permitir tentar novamente de imediato
-    location.reload();
+    location.reload(); // Recarrega para tentar de novo
   }
 }
 
@@ -127,7 +130,7 @@ async function gerarPDF(item) {
 
   cursorY += 10;
 
-  // --- DECLARAÇÃO LEGAL DE BENS USados ---
+  // --- DECLARAÇÃO LEGAL DE BENS USADOS ---
   doc.setFont("helvetica", "italic");
   doc.setFontSize(9.5);
   const declaracaoIVA = "Declaro que sou um vendedor particular e que os produtos vendidos são bens usados, não tendo sido liquidado IVA nesta venda.";
