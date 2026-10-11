@@ -6,6 +6,42 @@
   <title>Declaração de Venda</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Estilos seguros para manter os campos alinhados e compactos */
+    .produto-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .produto-linha {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: nowrap;
+    }
+    .produto-linha input {
+      padding: 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .p-qtd { width: 55px; text-align: center; }
+    .p-sku { width: 90px; }
+    .p-modelo { flex: 1; min-width: 120px; }
+    .p-tamanho { width: 80px; }
+    .p-valor { width: 90px; }
+    .btn-remover-linha {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -53,22 +89,22 @@
       <!-- PRODUTOS -->
       <h3>Produto(s) Vendido(s)</h3>
       <div id="produtos-container">
-        <!-- PRIMEIRA LINHA FIXA DIRETAMENTE NO HTML -->
-        <div class="produto-box" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 12px; position: relative;">
-          <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-            <input type="number" class="p-qtd" placeholder="Qt" value="1" min="1" style="width: 55px; padding: 8px;" required>
-            <input type="text" class="p-sku" placeholder="SKU / Ref" style="width: 100px; padding: 8px;">
-            <input type="text" class="p-modelo" placeholder="Marca, Modelo e Cor" style="flex: 2; min-width: 150px; padding: 8px;" required>
-            <input type="text" class="p-tamanho" placeholder="Tamanho" style="width: 80px; padding: 8px;">
-            <input type="number" step="0.01" class="p-valor" placeholder="Valor (€)" style="width: 90px; padding: 8px;" required>
+        <!-- ÚNICA LINHA INICIAL FIXA -->
+        <div class="produto-box">
+          <div class="produto-linha">
+            <input type="number" class="p-qtd" placeholder="Qt" value="1" min="1" required>
+            <input type="text" class="p-sku" placeholder="SKU / Ref">
+            <input type="text" class="p-modelo" placeholder="Marca, Modelo e Cor" required>
+            <input type="text" class="p-tamanho" placeholder="Tamanho">
+            <input type="number" step="0.01" class="p-valor" placeholder="Valor (€)" required>
           </div>
         </div>
       </div>
 
-      <button type="button" id="btn-adicionar-produto" class="btn-secondary">+ Adicionar Outro Produto</button>
+      <button type="button" id="btn-adicionar-produto" class="btn-secondary" style="margin-bottom: 20px;">+ Adicionar Outro Produto</button>
 
       <!-- DECLARAÇÃO ÚNICA GLOBAL NO FINAL DOS PRODUTOS -->
-      <div class="declaracao-global-box" style="margin-top: 25px; margin-bottom: 20px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+      <div class="declaracao-global-box" style="padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px;">
         <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 14px; color: #334155;">
           <input type="checkbox" id="declaracao-global" required style="margin-top: 3px; width: 18px; height: 18px;">
           <span>Declaro que sou unicamente um vendedor particular e que os produtos vendidos são bens usados, não tendo sido liquidado IVA nesta venda. (Obrigatório)</span>

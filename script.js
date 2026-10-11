@@ -71,20 +71,19 @@ const btnAdicionarProduto = document.getElementById('btn-adicionar-produto');
 function criarLinhaProduto() {
   const div = document.createElement('div');
   div.className = 'produto-box';
-  div.style.cssText = "background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 12px; position: relative;";
   
   div.innerHTML = `
-    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-      <input type="number" class="p-qtd" placeholder="Qt" value="1" min="1" style="width: 55px; padding: 8px;" required>
-      <input type="text" class="p-sku" placeholder="SKU / Ref" style="width: 100px; padding: 8px;">
-      <input type="text" class="p-modelo" placeholder="Marca, Modelo e Cor" style="flex: 2; min-width: 150px; padding: 8px;" required>
-      <input type="text" class="p-tamanho" placeholder="Tamanho" style="width: 80px; padding: 8px;">
-      <input type="number" step="0.01" class="p-valor" placeholder="Valor (€)" style="width: 90px; padding: 8px;" required>
-      <button type="button" class="btn-remover" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">X</button>
+    <div class="produto-linha">
+      <input type="number" class="p-qtd" placeholder="Qt" value="1" min="1" required>
+      <input type="text" class="p-sku" placeholder="SKU / Ref">
+      <input type="text" class="p-modelo" placeholder="Marca, Modelo e Cor" required>
+      <input type="text" class="p-tamanho" placeholder="Tamanho">
+      <input type="number" step="0.01" class="p-valor" placeholder="Valor (€)" required>
+      <button type="button" class="btn-remover-linha">X</button>
     </div>
   `;
 
-  div.querySelector('.btn-remover').addEventListener('click', () => {
+  div.querySelector('.btn-remover-linha').addEventListener('click', () => {
     div.remove();
   });
 
@@ -118,7 +117,7 @@ if (form) {
       const blob = await (await fetch(dataURL)).blob();
       const filename = `assinaturas/ass_${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
 
-      const { data: uploadData, error: uploadError } = await sbClient.storage
+      const { error: uploadError } = await sbClient.storage
         .from('declaracoes_docs')
         .upload(filename, blob);
 
