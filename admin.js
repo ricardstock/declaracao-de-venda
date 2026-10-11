@@ -1,10 +1,62 @@
 const SUPABASE_URL = "https://pwvjitzyxqxvvpmkfnlo.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3dmppdHp5eHF4dnZwbWtmbmxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MDYxNTAsImV4cCI6MjEwNzI4MjE1MH0.ctDJAzTRlzyBtSlmP8XiXTJjEOKEIUAHVnD9h8xQuuA"; // A tua chave anon public
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."; // A tua chave anon public
 
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// --- CONFIGURAÇÃO DE SEGURANÇA AVANÇADA ---
+const ADMIN_PASSWORD = "asMCIm12229MCJSnmzncw"; // Altera aqui a tua password
+const STORAGE_KEY_AUTH = "admin_auth_token_v1";
+const STORAGE_KEY_BLOCKED = "admin_blocked_device_v1";
+
+function verificarAcessoAdmin() {
+  const tokenSalvo = localStorage.getItem(STORAGE_KEY_AUTH);
+  const estaBloqueado = localStorage.getItem(STORAGE_KEY_BLOCKED);
+  
+  // Se o dispositivo foi bloqueado por errar a password anteriormente
+  if (estaBloqueado === ADMIN_PASSWORD) {
+    mostrarEcraBloqueado("Acesso negado permanentemente neste dispositivo devido a tentativas falhadas.");
+    return;
+  }
+
+  // Se já tiver autenticado com sucesso neste dispositivo para esta versão de password
+  if (tokenSalvo === ADMIN_PASSWORD) {
+    carregarDeclaracoes();
+    return;
+  }
+
+  // Se a password foi alterada no código, limpa o bloqueio anterior
+  if (estaBloqueado && estaBloqueado !== ADMIN_PASSWORD) {
+    localStorage.removeItem(STORAGE_KEY_BLOCKED);
+  }
+
+  const pass = prompt("Acesso Restrito ao Administrador.\nIntroduza a palavra-passe:");
+
+  if (pass === ADMIN_PASSWORD) {
+    // Confia neste dispositivo para sempre
+    localStorage.setItem(STORAGE_KEY_AUTH, ADMIN_PASSWORD);
+    carregarDeclaracoes();
+  } else {
+    // Bloqueia permanentemente este dispositivo associado a esta password
+    localStorage.setItem(STORAGE_KEY_BLOCKED, ADMIN_PASSWORD);
+    alert("Palavra-passe incorreta! Acesso negado permanentemente.");
+    mostrarEcraBloqueado("Acesso negado. Este dispositivo foi bloqueado.");
+  }
+}
+
+function mostrarEcraBloqueado(mensagem) {
+  document.body.innerHTML = `
+    <div style="text-align: center; margin-top: 120px; font-family: sans-serif; padding: 20px;">
+      <h1 style="color: #ef4444; font-size: 28px;">Acesso Negado</h1>
+      <p style="color: #475569; font-size: 16px; margin-top: 10px;">${mensagem}</p>
+      <p style="color: #94a3b8; font-size: 13px; margin-top: 30px;">Para desbloquear, o administrador deve atualizar a palavra-passe no código fonte.</p>
+    </div>
+  `;
+}
+
 async function carregarDeclaracoes() {
   const tbody = document.getElementById('admin-table-body');
+  if (!tbody) return;
+  
   const { data, error } = await sbClient.from('declaracoes').select('*').order('created_at', { ascending: false });
 
   if (error) {
@@ -79,7 +131,7 @@ async function gerarPDF(item) {
   doc.text(`Eu, ${item.nome}, NIF ${nifLimpo}, residente em:`, 20, cursorY);
   cursorY += 6;
   
-  // Morada em formato limpo e sem negrito
+  // Morada limpa e sem negrito
   doc.text(`${item.morada}`, 25, cursorY);
   cursorY += 6;
   doc.text(`${item.codigo_postal} ${item.cidade}, ${item.pais}`, 25, cursorY);
@@ -97,7 +149,6 @@ async function gerarPDF(item) {
   if (item.produtos && Array.isArray(item.produtos)) {
     item.produtos.forEach((p, index) => {
       doc.setFont("helvetica", "normal");
-      // Formato: quantidade - sku - marca,modelo,cor - tamanho - valor
       const skuTexto = p.sku ? p.sku : 'N/A';
       const linhaProd = `${index + 1}.  ${p.qtd} - ${skuTexto} - ${p.modelo} - ${p.tamanho} - ${p.valor}€`;
       doc.text(linhaProd, 25, cursorY);
@@ -133,7 +184,7 @@ async function gerarPDF(item) {
   doc.setFont("helvetica", "normal");
   doc.text("___________________________________", xVendedor, cursorY + 25);
 
-  // Inserir Assinatura Digital do Vendedor
+  // Inserir Assinatura Digital do Vendedor no local correto
   if (item.assinatura_url) {
     try {
       const imgData = await getDataUrlFromImage(item.assinatura_url);
@@ -166,32 +217,4 @@ function getDataUrlFromImage(url) {
   });
 }
 
-// --- DEFINIR PALAVRA-PASSE DE ADMIN ---
-const ADMIN_PASSWORD = "A_TUA_PALAVRA_PASSE_AQUI"; // Altera para a tua palavra-passe secreta
-
-function verificarAcessoAdmin() {
-  const sessaoIniciada = sessionStorage.getItem('admin_logged_in');
-
-  if (sessaoIniciada === 'true') {
-    carregarDeclaracoes();
-    return;
-  }
-
-  const pass = prompt("Acesso Restrito ao Administrador.\nPor favor, introduza a palavra-passe:");
-
-  if (pass === ADMIN_PASSWORD) {
-    sessionStorage.setItem('admin_logged_in', 'true');
-    carregarDeclaracoes();
-  } else {
-    alert("Palavra-passe incorreta! Acesso negado.");
-    document.body.innerHTML = `
-      <div style="text-align: center; margin-top: 100px; font-family: sans-serif;">
-        <h1 style="color: #ef4444;">Acesso Negado</h1>
-        <p>Não tem permissão para visualizar esta página.</p>
-      </div>
-    `;
-  }
-}
-
-// Substituir o evento DOMContentLoaded antigo por este:
 document.addEventListener('DOMContentLoaded', verificarAcessoAdmin);
