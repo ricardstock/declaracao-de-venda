@@ -3,48 +3,31 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// --- CONFIGURAÇÃO DE SEGURANÇA ---
-const ADMIN_PASSWORD = "asMCIm12224522ndasikicaap"; // Podes alterar aqui a palavra-passe quando quiseres
-const STORAGE_KEY_AUTH = "admin_auth_token_v2";
-const STORAGE_KEY_BLOCKED = "admin_blocked_device_v2";
+// --- A TUA PALAVRA-PASSE DE ADMIN ---
+const ADMIN_PASSWORD = "asMCIm12224522ndasikicaap"; // Coloca aqui a tua palavra-passe real
+const STORAGE_KEY_AUTH = "admin_auth_token_v3";
 
 function verificarAcessoAdmin() {
   const tokenSalvo = localStorage.getItem(STORAGE_KEY_AUTH);
-  const estaBloqueado = localStorage.getItem(STORAGE_KEY_BLOCKED);
   
-  // Se já tiveres entrado com sucesso neste dispositivo
+  // Se já tiveres autenticado com sucesso neste dispositivo, entra direto
   if (tokenSalvo === ADMIN_PASSWORD) {
     carregarDeclaracoes();
     return;
   }
 
-  // Se o dispositivo estava bloqueado por uma palavra-passe antiga, limpa o bloqueio
-  if (estaBloqueado) {
-    localStorage.removeItem(STORAGE_KEY_BLOCKED);
-  }
-
+  // Pedir palavra-passe
   const pass = prompt("Acesso Restrito ao Administrador.\nIntroduza a palavra-passe:");
 
   if (pass === ADMIN_PASSWORD) {
-    // Autentica e confia neste dispositivo
+    // Guarda a autorização neste dispositivo
     localStorage.setItem(STORAGE_KEY_AUTH, ADMIN_PASSWORD);
     carregarDeclaracoes();
   } else {
-    // Guarda o bloqueio para esta sessão
-    localStorage.setItem(STORAGE_KEY_BLOCKED, "true");
-    alert("Palavra-passe incorreta! Acesso negado.");
-    mostrarEcraBloqueado("Acesso negado. Palavra-passe incorreta.");
+    alert("Palavra-passe incorreta!");
+    // Recarrega a página para permitir tentar novamente de imediato
+    location.reload();
   }
-}
-
-function mostrarEcraBloqueado(mensagem) {
-  document.body.innerHTML = `
-    <div style="text-align: center; margin-top: 120px; font-family: sans-serif; padding: 20px;">
-      <h1 style="color: #ef4444; font-size: 28px;">Acesso Negado</h1>
-      <p style="color: #475569; font-size: 16px; margin-top: 10px;">${mensagem}</p>
-      <p style="color: #94a3b8; font-size: 13px; margin-top: 30px;">Para tentar novamente, atualize a página ou altere a palavra-passe no código.</p>
-    </div>
-  `;
 }
 
 async function carregarDeclaracoes() {
@@ -144,7 +127,7 @@ async function gerarPDF(item) {
 
   cursorY += 10;
 
-  // --- DECLARAÇÃO LEGAL DE BENS USADOS ---
+  // --- DECLARAÇÃO LEGAL DE BENS USados ---
   doc.setFont("helvetica", "italic");
   doc.setFontSize(9.5);
   const declaracaoIVA = "Declaro que sou um vendedor particular e que os produtos vendidos são bens usados, não tendo sido liquidado IVA nesta venda.";
