@@ -4,48 +4,34 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- CONFIGURAÇÃO DE SEGURANÇA ---
-const ADMIN_PASSWORD = "asMCIm12229MCJSnmzncw"; // Podes alterar aqui a palavra-passe quando quiseres
-const STORAGE_KEY_AUTH = "admin_auth_token_v2";
-const STORAGE_KEY_BLOCKED = "admin_blocked_device_v2";
+const ADMIN_PASSWORD = "asMCIm12224522ndasikicaap"; // Define aqui a tua palavra-passe
+const STORAGE_KEY_AUTH = "admin_auth_token_v5";
 
 function verificarAcessoAdmin() {
   const tokenSalvo = localStorage.getItem(STORAGE_KEY_AUTH);
-  const estaBloqueado = localStorage.getItem(STORAGE_KEY_BLOCKED);
   
-  // Se já tiveres entrado com sucesso neste dispositivo
   if (tokenSalvo === ADMIN_PASSWORD) {
     carregarDeclaracoes();
     return;
   }
 
-  // Se o dispositivo estava bloqueado por uma palavra-passe antiga, limpa o bloqueio
-  if (estaBloqueado) {
-    localStorage.removeItem(STORAGE_KEY_BLOCKED);
-  }
-
   const pass = prompt("Acesso Restrito ao Administrador.\nIntroduza a palavra-passe:");
 
   if (pass === ADMIN_PASSWORD) {
-    // Autentica e confia neste dispositivo
     localStorage.setItem(STORAGE_KEY_AUTH, ADMIN_PASSWORD);
     carregarDeclaracoes();
   } else {
-    // Guarda o bloqueio para esta sessão
-    localStorage.setItem(STORAGE_KEY_BLOCKED, "true");
-    alert("Palavra-passe incorreta! Acesso negado.");
-    mostrarEcraBloqueado("Acesso negado. Palavra-passe incorreta.");
+    alert("Palavra-passe incorreta!");
+    document.body.innerHTML = `
+      <div style="text-align: center; margin-top: 100px; font-family: sans-serif;">
+        <h2 style="color: #ef4444;">Acesso Incorreto</h2>
+        <p><a href="javascript:location.reload()">Clica aqui para tentar novamente</a></p>
+      </div>
+    `;
   }
 }
 
-function mostrarEcraBloqueado(mensagem) {
-  document.body.innerHTML = `
-    <div style="text-align: center; margin-top: 120px; font-family: sans-serif; padding: 20px;">
-      <h1 style="color: #ef4444; font-size: 28px;">Acesso Negado</h1>
-      <p style="color: #475569; font-size: 16px; margin-top: 10px;">${mensagem}</p>
-      <p style="color: #94a3b8; font-size: 13px; margin-top: 30px;">Para tentar novamente, atualize a página ou altere a palavra-passe no código.</p>
-    </div>
-  `;
-}
+document.addEventListener('DOMContentLoaded', verificarAcessoAdmin);
 
 async function carregarDeclaracoes() {
   const tbody = document.getElementById('admin-table-body');
@@ -99,7 +85,6 @@ async function gerarPDF(item) {
 
   const nifLimpo = item.nif ? item.nif.replace(/^PT/i, '') : '';
 
-  // --- CABEÇALHO ---
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
   doc.text("DECLARAÇÃO DE VENDA", 20, 22);
@@ -114,7 +99,6 @@ async function gerarPDF(item) {
 
   let cursorY = 40;
 
-  // --- IDENTIFICAÇÃO DO VENDEDOR ---
   doc.setFontSize(10.5);
   doc.setFont("helvetica", "normal");
   doc.text(`Eu, ${item.nome}, NIF ${nifLimpo}, residente em:`, 20, cursorY);
@@ -125,13 +109,11 @@ async function gerarPDF(item) {
 
   cursorY += 14;
 
-  // --- DECLARAÇÃO DE VENDA ---
   doc.setFont("helvetica", "normal");
   doc.text("Declaro que vendi a Ricardo Filipe Oliveira Pinho, NIF 260429651, os seguintes artigos:", 20, cursorY);
 
   cursorY += 12;
 
-  // --- LISTA DE PRODUTOS VENDIDOS ---
   if (item.produtos && Array.isArray(item.produtos)) {
     item.produtos.forEach((p, index) => {
       doc.setFont("helvetica", "normal");
@@ -144,7 +126,6 @@ async function gerarPDF(item) {
 
   cursorY += 10;
 
-  // --- DECLARAÇÃO LEGAL DE BENS USADOS ---
   doc.setFont("helvetica", "italic");
   doc.setFontSize(9.5);
   const declaracaoIVA = "Declaro que sou um vendedor particular e que os produtos vendidos são bens usados, não tendo sido liquidado IVA nesta venda.";
@@ -153,7 +134,6 @@ async function gerarPDF(item) {
 
   cursorY += (linhasIVA.length * 6) + 30;
 
-  // --- SECÇÃO DE ASSINATURAS ---
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
 
@@ -198,5 +178,3 @@ function getDataUrlFromImage(url) {
     img.src = url;
   });
 }
-
-document.addEventListener('DOMContentLoaded', verificarAcessoAdmin);

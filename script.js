@@ -10,7 +10,6 @@ let desenhando = false;
 let assinou = false;
 
 if (canvas) {
-  // Ajustar resolução em dispositivos móveis/retina
   const ratio = Math.max(window.devicePixelRatio || 1, 1);
   canvas.width = canvas.offsetWidth * ratio;
   canvas.height = canvas.offsetHeight * ratio;
@@ -65,11 +64,11 @@ if (canvas) {
   });
 }
 
-// GESTÃO DOS PRODUTOS
+// GESTÃO DOS PRODUTOS ADICIONAIS
 const produtosContainer = document.getElementById('produtos-container');
 const btnAdicionarProduto = document.getElementById('btn-adicionar-produto');
 
-function criarLinhaProduto(index) {
+function criarLinhaProduto() {
   const div = document.createElement('div');
   div.className = 'produto-box';
   div.style.cssText = "background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 12px; position: relative;";
@@ -81,30 +80,24 @@ function criarLinhaProduto(index) {
       <input type="text" class="p-modelo" placeholder="Marca, Modelo e Cor" style="flex: 2; min-width: 150px; padding: 8px;" required>
       <input type="text" class="p-tamanho" placeholder="Tamanho" style="width: 80px; padding: 8px;">
       <input type="number" step="0.01" class="p-valor" placeholder="Valor (€)" style="width: 90px; padding: 8px;" required>
-      ${index > 0 ? '<button type="button" class="btn-remover" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">X</button>' : ''}
+      <button type="button" class="btn-remover" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">X</button>
     </div>
   `;
 
-  if (index > 0) {
-    div.querySelector('.btn-remover').addEventListener('click', () => {
-      div.remove();
-    });
-  }
+  div.querySelector('.btn-remover').addEventListener('click', () => {
+    div.remove();
+  });
 
   produtosContainer.appendChild(div);
 }
 
-// Iniciar com 1 produto por defeito
-if (produtosContainer) {
-  criarLinhaProduto(0);
-
+if (btnAdicionarProduto) {
   btnAdicionarProduto.addEventListener('click', () => {
-    const totalAtuais = produtosContainer.querySelectorAll('.produto-box').length;
-    criarLinhaProduto(totalAtuais);
+    criarLinhaProduto();
   });
 }
 
-// SUBMISTÃO DO FORMULÁRIO
+// SUBMISSÃO DO FORMULÁRIO
 const form = document.getElementById('declaracao-form');
 
 if (form) {
@@ -121,7 +114,6 @@ if (form) {
     btnSubmeter.innerText = "A guardar declaração...";
 
     try {
-      // 1. Converter Assinatura para Imagem e fazer Upload
       const dataURL = canvas.toDataURL('image/png');
       const blob = await (await fetch(dataURL)).blob();
       const filename = `assinaturas/ass_${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
@@ -138,7 +130,6 @@ if (form) {
 
       const assinatura_url = urlData.publicUrl;
 
-      // 2. Recolher dados dos produtos
       const produtos = [];
       document.querySelectorAll('.produto-box').forEach(box => {
         produtos.push({
@@ -150,10 +141,8 @@ if (form) {
         });
       });
 
-      // 3. Obter data de hoje em formato YYYY-MM-DD
       const hoje = new Date().toISOString().split('T')[0];
 
-      // 4. Inserir na tabela Supabase
       const payload = {
         nome: document.getElementById('nome').value,
         nif: document.getElementById('nif').value,
